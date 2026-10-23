@@ -10,7 +10,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     && rm -rf /var/lib/apt/lists/* \
     && useradd --create-home --uid 10000 latch
 
-RUN set -eu; \
+# The VM manages AppArmor; this build-only marker prevents changing the build host.
+RUN --mount=type=tmpfs,target=/etc/apparmor.d set -eu; \
+    touch /etc/apparmor.d/bwrap-userns-restrict; \
     test "$(uname -m)" = x86_64; \
     release="https://releases.plow.co/latch-cli/releases/$LATCH_VERSION"; \
     archive="latch-$LATCH_VERSION-x86_64-unknown-linux-musl.tar.gz"; \
