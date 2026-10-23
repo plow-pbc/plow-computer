@@ -1,5 +1,8 @@
 #!/bin/sh
 set -eu
+if [ "$(id -u)" = 0 ]; then
+    exec setpriv --reuid=latch --regid=latch --init-groups env HOME=/home/latch "$0" "$@"
+fi
 : "${PLOW_API_BASE:?PLOW_API_BASE must name the host Plow proxy}"
 export PLOW_API_BASE
 token=$(mktemp)
