@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.revision=$PLOW_REVISION
 LABEL co.plow.probe="/usr/local/bin/plow-host-probe"
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    ca-certificates curl bubblewrap unzip xvfb python3 \
+    ca-certificates curl bubblewrap unzip xvfb python3 util-linux \
     libgtk-3-0t64 libasound2t64 libx11-xcb1 libdbus-1-3 \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --create-home --uid 10000 latch

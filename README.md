@@ -13,6 +13,8 @@ The VM receives `PLOW_API_BASE`, pointing at its own exe.dev HTTP-proxy
 integration. The real credential stays in the proxy, which supplies it upstream.
 The image contains no login, peer key, vault contents, or real Plow token.
 
+Boot drops root to the `latch` user (UID 10000), including on exe.dev where
+the VM starts the image command as root, and sets `HOME=/home/latch`.
 On each boot, Latch logs in as `cloud` using a mode-600 temporary file containing
 only `proxied`. Latch saves that placeholder and the temporary file is removed.
 Boot exports `PLOW_API_BASE` to login and foreground serving, enables Google
