@@ -23,7 +23,7 @@ Google, reboot the host to enable it.
 ## Build and test
 
 ```sh
-just test-fast
+just test
 docker build --platform linux/amd64 -f cloud/Dockerfile -t plow-computer .
 docker run --rm --platform linux/amd64 --entrypoint /usr/local/bin/plow-host-probe plow-computer
 ```
