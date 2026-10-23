@@ -3,9 +3,13 @@
 The base image for each Plow user's cloud computer on exe.dev. Latch is its
 first service, providing a browser and Google tools to the user's agents.
 
-The Linux amd64 image pins Latch `v0.1.0-139` and installs Chrome, Latch's default
-browser, and gog at build time. Chrome is baked in; boot does not download it.
-The image is about 1.5 GB uncompressed and runs on 1 CPU / 2 GB / 10 GB.
+The Linux amd64 image pins Latch `v0.1.0-141` and installs Camoufox and gog at
+build time. Camoufox is baked in; boot does not download it. Chrome is not
+installed. The image is about 3.1 GB uncompressed.
+
+Latch 141 defaults to Chrome in the calling CLI and has no host default-engine
+setting. Callers must use `latch browser open --host cloud --engine camoufox URL`;
+an open without `--engine` requests Chrome and fails because it is not installed.
 
 ## Boot
 
@@ -31,7 +35,8 @@ docker run --rm --platform linux/amd64 --entrypoint /usr/local/bin/plow-host-pro
 ```
 
 The boot test uses only Python's standard library. The image probe checks the
-installed Latch, Chrome and gog and prints `PLOW_PROBE_OK` on success.
+installed Latch, Camoufox and gog, verifies Chrome is absent, and prints
+`PLOW_PROBE_OK` on success.
 
 ## Publish
 

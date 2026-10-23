@@ -1,6 +1,6 @@
 FROM ubuntu:24.04
 ARG PLOW_REVISION
-ARG LATCH_VERSION=v0.1.0-139
+ARG LATCH_VERSION=v0.1.0-141
 LABEL org.opencontainers.image.revision=$PLOW_REVISION
 LABEL co.plow.probe="/usr/local/bin/plow-host-probe"
 
@@ -22,7 +22,7 @@ RUN --mount=type=tmpfs,target=/etc/apparmor.d set -eu; \
     awk -v name="$archive" '$2 == name { print; found=1 } END { if (!found) exit 1 }' SHA256SUMS | sha256sum -c -; \
     tar -xzf "$archive"; \
     sh "latch-$LATCH_VERSION-x86_64-unknown-linux-musl/install-binary.sh" \
-        --bin-dir /usr/local/bin --state-dir /home/latch/.latch --browser chrome --non-interactive; \
+        --bin-dir /usr/local/bin --state-dir /home/latch/.latch --browser camoufox --non-interactive; \
     chown -R latch:latch /home/latch; \
     rm -rf /tmp/latch-install
 
