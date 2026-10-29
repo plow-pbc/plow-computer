@@ -3,9 +3,28 @@
 The base image for each Plow user's cloud computer on exe.dev. Latch is its
 first service, providing a browser and Google tools to the user's agents.
 
-The Linux amd64 image pins Latch `v0.1.0-139` and installs Chrome, Latch's default
-browser, and gog at build time. Chrome is baked in; boot does not download it.
-The image is about 1.5 GB uncompressed and runs on 1 CPU / 2 GB / 10 GB.
+The Linux amd64 image bakes the newest promoted Latch release, Camoufox and gog
+at build time. Chrome is not installed. Each boot attempts to install the newest
+promoted Latch binary; `LATCH_VERSION=v0.1.0-148` on the VM holds a specific
+release instead. Boot calls `latch update`, which verifies the release's signed
+checksums and installs its pinned helpers and only the browser engines already
+present. Unchanged Camoufox/gog pins are reused; changed pins are downloaded.
+The update attempt is capped at 15 minutes to allow an engine download. On
+failure, boot logs the error and starts serving with the installed Latch.
+
+Latch lives in `/opt/latch/bin`, owned by `latch` and first on serve's PATH.
+`/usr/local/bin/latch` links to it, so non-login SSH and the host rebuild's stop
+and readiness commands can also find it. Restoring `/home/latch` does not
+overwrite the executable. Camoufox is the only baked browser, so `latch update`
+keeps Camoufox and does not add Chrome.
+
+An interrupted update can leave the new binary installed before its dependencies
+finish. Run `latch update <tag>` to retry that release's installer explicitly;
+an unqualified update skips an already-current binary. A failed update does not
+restore an older binary or dependencies.
+
+Use `latch browser open --host cloud --engine camoufox URL` to explicitly select
+the baked engine. Active browser sessions do not survive a host restart.
 
 ## Boot
 
@@ -15,8 +34,8 @@ The image contains no login, peer key, vault contents, or real Plow token.
 
 Boot drops root to the `latch` user (UID 10000), including on exe.dev where
 the VM starts the image command as root, and sets `HOME=/home/latch`.
-On each boot, Latch logs in as `cloud` using a mode-600 temporary file containing
-only `proxied`. Latch saves that placeholder and the temporary file is removed.
+After the update attempt on each boot, Latch logs in as `cloud` using a mode-600
+temporary file containing only `proxied`. Latch saves that placeholder and the temporary file is removed.
 Boot exports `PLOW_API_BASE` to login and foreground serving, enables Google
 through Latch's offline setup path, then execs `latch serve --foreground
 --headless-browsers` as PID 1. Google setup failure is tolerated; after connecting
@@ -31,7 +50,8 @@ docker run --rm --platform linux/amd64 --entrypoint /usr/local/bin/plow-host-pro
 ```
 
 The boot test uses only Python's standard library. The image probe checks the
-installed Latch, Chrome and gog and prints `PLOW_PROBE_OK` on success.
+installed Latch, Camoufox and gog, verifies Chrome is absent, and prints
+`PLOW_PROBE_OK` on success.
 
 ## Publish
 
