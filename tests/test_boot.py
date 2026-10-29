@@ -25,7 +25,13 @@ class BootTest(TestCase):
 set -eu
 [ "$SIMULATED_UID" = 10000 ]
 [ "$HOME" = /home/latch ]
-[ "$1" = 90 ] && [ "$2" = /usr/local/bin/plow-install-latch ]
+[ "$1" = 900 ] && [ "$2" = latch ] && [ "$3" = update ]
+shift 3
+if [ -n "$EXPECTED_VERSION" ]; then
+    [ "$#" = 1 ] && [ "$1" = "$EXPECTED_VERSION" ]
+else
+    [ "$#" = 0 ]
+fi
 [ "${LATCH_VERSION:-}" = "$EXPECTED_VERSION" ]
 exit "$INSTALL_EXIT"
 ''',
@@ -80,7 +86,7 @@ esac
                 )
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(
-                    "Latch download failed; starting installed Latch" in result.stderr,
+                    "Latch update failed; starting installed Latch" in result.stderr,
                     install_exit == "1",
                 )
                 self.assertIn("logged in through proxy", result.stdout)

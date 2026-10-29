@@ -9,12 +9,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     && rm -rf /var/lib/apt/lists/* \
     && useradd --create-home --uid 10000 latch
 
-COPY --chmod=755 cloud/install-latch.sh /usr/local/bin/plow-install-latch
 # The VM manages AppArmor; this build-only marker prevents changing the build host.
-RUN --mount=type=tmpfs,target=/etc/apparmor.d set -eu; \
+RUN --mount=type=tmpfs,target=/etc/apparmor.d \
+    --mount=type=bind,source=cloud/install-latch.sh,target=/tmp/install-latch.sh set -eu; \
     touch /etc/apparmor.d/bwrap-userns-restrict; \
     mkdir -p /opt/latch/bin; \
-    plow-install-latch --bake; \
+    sh /tmp/install-latch.sh; \
+    ln -s /opt/latch/bin/latch /usr/local/bin/latch; \
     chown -R latch:latch /opt/latch /home/latch
 
 COPY --chmod=755 cloud/boot.sh /usr/local/bin/plow-host
