@@ -1,6 +1,9 @@
 FROM ubuntu:24.04
 ARG PLOW_REVISION
-ARG LATCH_VERSION=v0.1.0-139
+# One latch release, checked against its sha256 here rather than against a SHA256SUMS fetched
+# from the same host as the archive. These lines are the one place the version lives.
+ARG LATCH_VERSION=v0.1.0-149
+ARG LATCH_SHA256_AMD64=7ba6a41df3d1ba8856c896c40003044ce2d97775d608a42e218075409e378605
 LABEL org.opencontainers.image.revision=$PLOW_REVISION
 LABEL co.plow.probe="/usr/local/bin/plow-host-probe"
 
@@ -18,8 +21,7 @@ RUN --mount=type=tmpfs,target=/etc/apparmor.d set -eu; \
     archive="latch-$LATCH_VERSION-x86_64-unknown-linux-musl.tar.gz"; \
     mkdir /tmp/latch-install; cd /tmp/latch-install; \
     curl -fsSLO "$release/$archive"; \
-    curl -fsSLO "$release/SHA256SUMS"; \
-    awk -v name="$archive" '$2 == name { print; found=1 } END { if (!found) exit 1 }' SHA256SUMS | sha256sum -c -; \
+    echo "$LATCH_SHA256_AMD64  $archive" | sha256sum -c -; \
     tar -xzf "$archive"; \
     sh "latch-$LATCH_VERSION-x86_64-unknown-linux-musl/install-binary.sh" \
         --bin-dir /usr/local/bin --state-dir /home/latch/.latch --browser chrome --non-interactive; \

@@ -3,8 +3,8 @@
 The base image for each Plow user's cloud computer on exe.dev. Latch is its
 first service, providing a browser and Google tools to the user's agents.
 
-The Linux amd64 image pins Latch `v0.1.0-139` and installs Chrome, Latch's default
-browser, and gog at build time. Chrome is baked in; boot does not download it.
+The Linux amd64 image pins Latch `v0.1.0-149`, by version and sha256, and
+installs Chrome, Latch's default browser, and gog at build time. Chrome is baked in; boot does not download it.
 The image is about 1.5 GB uncompressed and runs on 1 CPU / 2 GB / 10 GB.
 
 ## Boot
