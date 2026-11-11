@@ -1,2 +1,2 @@
 # latch is the service this image installs, updates and serves.
-plow-pbc/latch
+plow-pbc/latch-cli
